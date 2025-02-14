@@ -20,7 +20,7 @@ const Fruit = require('./models/fruit.js');
 app.use(express.urlencoded({ extended: false}));
 
 //Get  // why do we async?
-app.get('/', async (req, res)=> {
+app.get('/', (req, res)=> {
     res.render('index.ejs');
 });
 
@@ -32,6 +32,21 @@ app.get('/fruits/new', (req, res) =>{
     res.render('fruits/new.ejs') //we made a new folder called new.ejs and then grab it to make another page
 });
 
+// Get/fruits to get all the fruits 
+app.get('/fruits', async (req, res) => {
+    const allFruits = await Fruit.find();
+    console.log(allFruits);
+    res.render('fruits/index.ejs', { fruits: allFruits});
+});
+
+//get fruits id...need to link to the id and makes to a new link with fruit and ID
+app.get('/fruits/:fruitid', async (req, res) =>{
+    // add asycn with database transactions
+    const foundFruit = await Fruit.findById(req.params.fruitid);
+    res.render('fruits/show.ejs', {fruit: foundFruit});
+});
+
+
 //POST /fruits
 //async because its a database transaction  - whateve that means 
 app.post('/fruits', async (req, res) => {
@@ -42,7 +57,7 @@ app.post('/fruits', async (req, res) => {
     }
 
     await Fruit.create(req.body);
-    res.redirect('/fruits/new') //this redirect the fruits-new to the fruits 
+    res.redirect('/fruits') //this redirect the fruits-new to the fruits 
 });
 
 app.listen(3000, () => {
