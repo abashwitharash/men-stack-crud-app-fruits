@@ -6,6 +6,10 @@ dotenv.config();
 const express = require('express');
 const mongoose = require('mongoose'); //
 
+//method override
+const methodOverride = require("method-override"); // new
+const morgan = require("morgan"); //new
+
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI); // here we are able to use the functionality of mongoose 
@@ -18,6 +22,8 @@ const Fruit = require('./models/fruit.js');
 
 //middleware express is the library available - 
 app.use(express.urlencoded({ extended: false}));
+app.use(methodOverride("_method")); // new
+app.use(morgan("dev")); //new
 
 //Get  // why do we async?
 app.get('/', (req, res)=> {
@@ -59,6 +65,20 @@ app.post('/fruits', async (req, res) => {
     await Fruit.create(req.body);
     res.redirect('/fruits') //this redirect the fruits-new to the fruits 
 });
+
+
+app.delete('/fruits/:fruitId', async (req, res)=> {
+    await Fruit.findByIdAndDelete(req.params.fruitId);
+    res.redirect('/fruits');
+});
+
+// GET localhost:3000/fruits/:fruitId/edit
+app.get("/fruits/:fruitId/edit", async (req, res) => {
+    const foundFruit = await Fruit.findById(req.params.fruitId);
+    res.render("fruits/edit.ejs", {fruit: foundFruit});
+  });
+  
+
 
 app.listen(3000, () => {
   console.log('Listening on port 3000');
