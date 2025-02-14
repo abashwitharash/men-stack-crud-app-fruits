@@ -11,7 +11,8 @@ mongoose.connect(process.env.MONGODB_URI) // here we are able to use the functio
 mongoose.connection.on('connected', () => {
     console.log(`connected on mondoDB ${mongoose.connection.name}`)
 })
-
+//THIS GRABS THE CONNECTION BETWEEN FRUITS AND SERVER
+const Fruit = require('./models/fruit.js');
 
 //Get  // why do we async?
 app.get('/', async (req, res)=> {
